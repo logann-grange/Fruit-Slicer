@@ -1,0 +1,151 @@
+import pygame
+import sys
+
+
+pygame.init()
+screen=pygame.display.set_mode((1080,720))
+pygame.display.set_caption("Découpeur de fruits")
+clock=pygame.time.Clock()
+font= pygame.font.SysFont("Arial", 42)
+
+#etats
+MENU="menu"
+JEU="jeu"
+OPTION="option"
+PAUSE="pause"
+
+etat=MENU
+ancien_etat=MENU
+pos_click=None
+
+running=True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONUP:
+            pos_click=pygame.mouse.get_pos()
+
+    
+
+                
+               
+    pos_souris=pygame.mouse.get_pos()
+
+    if etat==MENU:
+        screen.fill((0,0,0))
+        pygame.draw.rect(screen,(0,255,0),(390,200,300,75))
+        pygame.draw.rect(screen,(0,255,0),(390,325,300,75))
+        pygame.draw.rect(screen,(255,0,0),(390,450,300,75))
+        if 390<=pos_souris[0]<=690:
+            if 200<=pos_souris[1]<=275:
+                pygame.draw.rect(screen,(75,255,75),(390,200,300,75))
+            else:
+                pygame.draw.rect(screen,(0,255,0),(390,200,300,75))
+
+            if 325<=pos_souris[1]<=400:
+                pygame.draw.rect(screen,(75,255,75),(390,325,300,75))
+            else:
+                pygame.draw.rect(screen,(0,255,0),(390,325,300,75))
+        
+            if 450<=pos_souris[1]<=525:
+                pygame.draw.rect(screen,(255,75,75),(390,450,300,75))
+            else:
+                pygame.draw.rect(screen,(255,0,0),(390,450,300,75))
+        
+        if pos_click is not None:    
+            if 390<=pos_click[0]<=690:    
+                if 450<=pos_click[1]<=525:
+                    running=False
+                    pos_click=None
+                elif 200<=pos_click[1]<=275:
+                    etat=JEU
+                    pos_click=None
+                elif 325<=pos_click[1]<=400:
+                    ancien_etat=etat
+                    etat=OPTION
+                    pos_click=None
+    
+        txt_btn_1 = font.render("Jouer", True, (255,255,255))
+        txt_btn_2 = font.render("Options", True, (255,255,255))
+        txt_btn_3 = font.render("Quitter :(", True, (255,255,255))
+        screen.blit(txt_btn_1 , (490,220))
+        screen.blit(txt_btn_2 , (470,345))
+        screen.blit(txt_btn_3 , (470,470))
+    
+    elif etat==JEU:
+        screen.fill((0,0,0))
+        pygame.draw.rect(screen, (0,255,0), (10,10,50,50))
+        if 10<=pos_souris[0]<=60:
+            if 10<=pos_souris[1]<=60:
+                pygame.draw.rect(screen, (50,255,50),(10,10,50,50))
+        
+        if pos_click is not None:
+            if 10<=pos_click[0]<=60:
+                if 10<=pos_click[1]<=60:
+                    etat=PAUSE
+                    pos_click=None
+
+        txt_pause=font.render("⏸", True, (255,255,255)) 
+        screen.blit(txt_pause,(25,15))
+
+    elif etat==OPTION:
+        screen.fill((0,0,0))
+        pygame.draw.rect(screen, (0,255,0), (340,200,400,75))
+        pygame.draw.rect(screen, (0,255,0), (390,325,300,75))
+        pygame.draw.rect(screen, (0,255,0), (10,10,50,50)) #btn retour
+        txt_btn_1 = font.render("Niveau de difficulté", True, (255,255,255))
+        txt_btn_2 = font.render("Langues", True, (255,255,255))
+        txt_btn_3 = font.render("<", True, (255,255,255))
+        screen.blit(txt_btn_1 , (370,220))
+        screen.blit(txt_btn_2 , (460,345))
+        screen.blit(txt_btn_3 , (25,10))
+        
+        if pos_click is not None:
+            if 10<=pos_click[0]<=60:
+                if 10<=pos_click[1]<=60:
+                    etat=ancien_etat
+                    pos_click=None
+            elif 325<=pos_click[1]<=400:
+                if 390<=pos_click[0]<=690:
+                    print("choix langue")
+                    pos_click=None
+            elif 200<=pos_click[1]<=275:
+                if 340<=pos_click[0]<=740:
+                    print("nv diff")
+                    pos_click=None
+            
+
+    elif etat==PAUSE:
+        screen.fill((0,0,0))
+        pygame.draw.rect(screen, (0,255,0), (390,200,300,75))
+        pygame.draw.rect(screen, (0,255,0), (390,325,300,75))
+        pygame.draw.rect(screen, (255,0,0), (390,450,300,75))
+
+        txt_btn_1 = font.render("Reprendre", True, (255,255,255))
+        txt_btn_2 = font.render("Options", True, (255,255,255))
+        txt_btn_3 = font.render("Menu Principal", True, (255,255,255))
+        screen.blit(txt_btn_1 , (450,220))
+        screen.blit(txt_btn_2 , (470,345))
+        screen.blit(txt_btn_3 , (400,470))
+        
+        if pos_click is not None:
+
+            if 390<=pos_click[0]<=690:
+                if 200<=pos_click[1]<=275:
+                    etat=JEU
+                    pos_click=None
+                elif 325<=pos_click[1]<=400:
+                    ancien_etat=etat
+                    etat=OPTION
+                    pos_click=None
+                elif 450<=pos_click[1]<=525:
+                    etat=MENU  
+                    pos_click=None  
+           
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
+sys.exit()
