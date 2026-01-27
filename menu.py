@@ -1,6 +1,6 @@
 import pygame
 import sys
-from sauvegarde import charger_scores
+from sauvegarde import *
 
 pygame.init()
 screen=pygame.display.set_mode((1080,720))
@@ -18,6 +18,8 @@ TABLEAU_SCORE="tableau_des_scores"
 etat=MENU
 ancien_etat=MENU
 pos_click=None
+d=1
+l=0
 
 running=True
 while running:
@@ -99,34 +101,60 @@ while running:
                     if 10<=pos_click[1]<=60:
                         etat=PAUSE
                         pos_click=None
-
+            txt_score=font.render(str(score(5,12)), True, (255,255,255)) #valeur de test dans score()
             txt_pause=font.render("⏸", True, (255,255,255)) 
             screen.blit(txt_pause,(25,15))
+            screen.blit(txt_score,(500,50))
 
         case "option" :
+            nv_diff=["Facile","Moyen","Difficile"]
+            lang=["Francais","Anglais"]
+            
             screen.fill((0,0,0))
             pygame.draw.rect(screen, (0,255,0), (340,200,400,75))
-            pygame.draw.rect(screen, (0,255,0), (390,325,300,75))
-            pygame.draw.rect(screen, (0,255,0), (10,10,50,50)) #btn retour
+            pygame.draw.rect(screen, (0,255,0), (255,200,75,75))
+            pygame.draw.rect(screen, (0,255,0), (750,200,75,75))
             txt_btn_1 = font.render("Niveau de difficulté", True, (255,255,255))
-            txt_btn_2 = font.render("Langues", True, (255,255,255))
+            txt_nv = font.render(nv_diff[d], True, (0,0,0))
+
+            pygame.draw.rect(screen, (0,255,0), (390,325,300,75))
+            pygame.draw.rect(screen, (0,255,0), (305,325,75,75))
+            pygame.draw.rect(screen, (0,255,0), (700,325,75,75))
+            txt_l = font.render(lang[l], True, (0,0,0))
+
+            pygame.draw.rect(screen, (0,255,0), (10,10,50,50)) 
             txt_btn_3 = font.render("<", True, (255,255,255))
-            screen.blit(txt_btn_1 , (370,220))
-            screen.blit(txt_btn_2 , (460,345))
+            txt_btn_4 = font.render(">", True, (255,255,255))
+            
+            screen.blit(txt_btn_1 , (370,150))
             screen.blit(txt_btn_3 , (25,10))
+            screen.blit(txt_btn_3 , (280,215))
+            screen.blit(txt_btn_3 , (330,340))
+            screen.blit(txt_btn_4 , (775,215))
+            screen.blit(txt_btn_4 , (725,340))
+            screen.blit(txt_nv , (470,220))
+            screen.blit(txt_l, (460,345))
 
             if pos_click is not None:
                 if 10<=pos_click[0]<=60:
                     if 10<=pos_click[1]<=60:
                         etat=ancien_etat
                         pos_click=None
-                elif 325<=pos_click[1]<=400:
-                    if 390<=pos_click[0]<=690:
-                        print("choix langue")
+                elif 255<=pos_click[0]<=330:
+                    if 200<=pos_click[1]<=275:
+                        d = (d - 1) % 3
                         pos_click=None
-                elif 200<=pos_click[1]<=275:
-                    if 340<=pos_click[0]<=740:
-                        print("nv diff")
+                elif 750<=pos_click[0]<=825:
+                    if 200<=pos_click[1]<=275:
+                        d = (d + 1) % 3
+                        pos_click=None
+                elif 305<=pos_click[0]<=380:
+                    if 325<=pos_click[1]<=380:
+                        l = (l - 1) % 2
+                        pos_click=None
+                elif 700<=pos_click[0]<=775:
+                    if 325<=pos_click[1]<=380:
+                        l = (l + 1) % 2
                         pos_click=None
             
 
@@ -162,9 +190,9 @@ while running:
             pygame.draw.rect(screen,(255,0,0),(10,10,1060,700))
             pygame.draw.rect(screen,(0,0,0),(10,10,50,50))
             txt_titre = font.render("Tableau des scores !", True, (255,255,255))
-            score= font.render(str(charger_scores()), True, (255,255,255))
+            scr= font.render(str(charger_scores()), True, (255,255,255))
             screen.blit(txt_titre,(350,50))
-            screen.blit(score,(100,200))
+            screen.blit(scr,(100,200))
             if 10<=pos_souris[0]<=60:
                 if 10<=pos_souris[1]<=60:
                     pygame.draw.rect(screen,(75,0,0),(10,10,50,50))
