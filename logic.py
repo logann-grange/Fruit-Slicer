@@ -1,6 +1,7 @@
 from random import *
 from pygame import *
-
+from random import *
+import time
 # Définition des classes pour les fruits, bombes et glaçons
 class Fruit:
     def __init__(self, x, y, speed, image,touche):
@@ -23,7 +24,7 @@ fruit_généré=[]
 def génération_fruit(liste_de_touche,liste_utilisé,max_fruit):
     if len(fruit_généré)>=max_fruit:
         return
-    fruit=Fruit()
+    fruit=Fruit(0,0,0,None,None)
     touche_aleatoire=liste_de_touche[randint(0,len(liste_de_touche)-1)]
     while touche_aleatoire in liste_utilisé:
         touche_aleatoire=liste_de_touche[randint(0,len(liste_de_touche)-1)]
@@ -60,7 +61,7 @@ def couper(fruit_généré, liste_utilisé, pressed_chars):
 def generer_bombe(liste_de_touche,liste_utilisé,max_fruit):
     if len(fruit_généré)>=max_fruit:
         return
-    bombe=Bombe()
+    bombe=Bombe(0,0,0,None,None)
     touche_aleatoire=liste_de_touche[randint(0,len(liste_de_touche)-1)]
     while touche_aleatoire in liste_utilisé:
         touche_aleatoire=liste_de_touche[randint(0,len(liste_de_touche)-1)]
@@ -72,7 +73,7 @@ def generer_bombe(liste_de_touche,liste_utilisé,max_fruit):
 def generer_glaçon(liste_de_touche,liste_utilisé,max_fruit):
     if len(fruit_généré)>=max_fruit:
         return
-    glaçon=Glaçon()
+    glaçon=Glaçon(0,0,0,None,None)
     touche_aleatoire=liste_de_touche[randint(0,len(liste_de_touche)-1)]
     while touche_aleatoire in liste_utilisé:
         touche_aleatoire=liste_de_touche[randint(0,len(liste_de_touche)-1)]
@@ -82,25 +83,25 @@ def generer_glaçon(liste_de_touche,liste_utilisé,max_fruit):
 
  # Génère un fruit, une bombe ou un glaçon en fonction d'un nombre aléatoire
 def tout_genere(liste_de_touche,liste_utilisé,max_fruit,vitesse):
-    nb=random.randint(1,100)
+    nb=randint(1,100)
     if nb<=70:
         fruit,liste_utilisé=génération_fruit(liste_de_touche,liste_utilisé,max_fruit)
         fruit.speed=vitesse
-        time.sleep(random.randint(1,3)*0.1)
+        time.sleep(randint(2,4)*0.1)
         return fruit,liste_utilisé
     elif nb==71 or nb==90:
         bombe,liste_utilisé=generer_bombe(liste_de_touche,liste_utilisé,max_fruit)
         bombe.speed=vitesse
-        time.sleep(random.randint(1,3)*0.1)
+        time.sleep(randint(2,4)*0.1)
         return bombe,liste_utilisé
     else:
         glacon,liste_utilisé=generer_glaçon(liste_de_touche,liste_utilisé,max_fruit)
         glacon.speed=vitesse
-        time.sleep(random.randint(1,3)*0.1)
+        time.sleep(randint(2,4)*0.1)
         return glacon,liste_utilisé
 # Gestion des vies en cas de rattage 
-def strike(rater,vie):
-    if rater :
+def strike(fruit,rater,vie):
+    if fruit.y==rater:
         vie-=1
     return vie
 
@@ -110,4 +111,27 @@ def defaite(vie,bombe):
         return True
     return False
 
-    
+#augmentation de la vitesse en fonction du score
+def augmentation_vitesse(vitesse,score):
+    if score %50==0:
+        vitesse+=1
+    return vitesse
+
+def reset_game(liste_utilisé,fruit_généré,bombe):
+    liste_utilisé.clear()
+    fruit_généré.clear()
+    bombe=False
+    return liste_utilisé,fruit_généré,bombe
+
+def choix_difficulte(nv):
+    match nv:
+        case 1:
+            max_fruit=5
+            vitesse=2
+        case 2:
+            max_fruit=7
+            vitesse=3
+        case 3:
+            max_fruit=10
+            vitesse=4
+    return max_fruit,vitesse
