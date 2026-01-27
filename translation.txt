@@ -1,0 +1,8 @@
+français:english
+jouer:play
+options:options
+quitter:quit
+reprendre:continue
+menu principal:main menu
+niveau de difficulté:difficulty level
+langue:language
