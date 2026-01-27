@@ -81,18 +81,21 @@ def generer_glaçon(liste_de_touche,liste_utilisé,max_fruit):
     return glaçon,liste_utilisé
 
  # Génère un fruit, une bombe ou un glaçon en fonction d'un nombre aléatoire
-def tout_genere(liste_de_touche,liste_utilisé,max_fruit):
+def tout_genere(liste_de_touche,liste_utilisé,max_fruit,vitesse):
     nb=random.randint(1,100)
     if nb<=70:
         fruit,liste_utilisé=génération_fruit(liste_de_touche,liste_utilisé,max_fruit)
+        fruit.speed=vitesse
         time.sleep(random.randint(1,3)*0.1)
         return fruit,liste_utilisé
     elif nb==71 or nb==90:
         bombe,liste_utilisé=generer_bombe(liste_de_touche,liste_utilisé,max_fruit)
+        bombe.speed=vitesse
         time.sleep(random.randint(1,3)*0.1)
         return bombe,liste_utilisé
     else:
         glacon,liste_utilisé=generer_glaçon(liste_de_touche,liste_utilisé,max_fruit)
+        glacon.speed=vitesse
         time.sleep(random.randint(1,3)*0.1)
         return glacon,liste_utilisé
 # Gestion des vies en cas de rattage 
@@ -105,4 +108,6 @@ def strike(rater,vie):
 def defaite(vie,bombe):
     if vie<=0 or bombe:
         return True
-    return False    
+    return False
+
+    
