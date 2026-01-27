@@ -1,8 +1,7 @@
 from random import *
-import json
 from pygame import *
 
-
+# Définition des classes pour les fruits, bombes et glaçons
 class Fruit:
     def __init__(self, x, y, speed, image,touche):
         self.x = x
@@ -15,6 +14,7 @@ class Glaçon(Fruit):
 class Bombe(Fruit):
     pass   
 
+# Liste des touches possibles
 liste_de_touche=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",",",";",":","!","ù","$","*"]
 liste_utilisé=[]
 fruit_généré=[]
@@ -31,11 +31,6 @@ def génération_fruit(liste_de_touche,liste_utilisé,max_fruit):
     fruit.touche= touche_aleatoire
     return fruit,liste_utilisé
 
-# Calcule le score en fonction du nombre de fruits coupés
-def score(points,nb_coupe):
-    points+= nb_coupe*10
-    return points
-    
 #coupe les fruits générés en fonction des touches pressées
 def couper(fruit_généré, liste_utilisé, pressed_chars):
     if not pressed_chars:
@@ -105,28 +100,6 @@ def strike(rater,vie):
     if rater :
         vie-=1
     return vie
-# Chargement des scores depuis un fichier JSON
-def charger_scores(score_file="scores.txt"):
-    try:
-        with open(score_file, "r", encoding="utf-8") as f:
-            content = f.read().strip()
-            if not content:
-                return []
-            f.seek(0)
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []
-# sauvegarde des scores dans un fichier JSON
-def sauvegarder_score(highscores, score_file="scores.txt"):
-    with open(score_file, "w", encoding="utf-8") as f:
-        json.dump(highscores, f, ensure_ascii=False, indent=4)
-#ajout d'un score dans la liste des highscores
-def ajouter_score(nom_joueur, points,highscores):
-    nouveau_score = {"Nom": nom_joueur, "Score": points}
-    highscores.append(nouveau_score)
-    highscores.sort(key=lambda x: x["Score"], reverse=True)
-    sauvegarder_score(highscores)
-
 
 #determination de la defaite
 def defaite(vie,bombe):
