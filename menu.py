@@ -19,6 +19,34 @@ ancien_etat=MENU
 pos_click=None
 d=1
 l=0
+fond = pygame.image.load("Images/fond.png")
+fond = pygame.transform.scale(fond, (1080,720))
+
+highscores=charger_scores()
+
+def print_scores_window(highscores):
+    screen.blit(fond,(0,0))
+    font_title = pygame.font.SysFont('Rockwell', 35, bold=True)
+    font_score = pygame.font.SysFont('Rockwell', 25)    
+    font_small = pygame.font.SysFont('Rockwell', 18)
+    
+   
+    txt_title = font_title.render("MEILLEURS SCORES", 1, (0, 0, 0))
+    screen.blit(txt_title, (320, 150))
+    
+    if not highscores:
+        txt_empty = font_score.render("Aucun score enregistré", 1, (100, 100, 100))
+        screen.blit(txt_empty, (280, 200))
+    else:
+        y_pos = 200
+        for i, score_entry in enumerate(highscores[:10]):
+            txt_score = font_score.render(f"{i+1}. {score_entry['Nom']} - {score_entry['Score']} pts", 1, (255, 255, 255))
+            screen.blit(txt_score, (270, y_pos))
+            y_pos += 40
+            
+    
+
+    
 
 running=True
 while running:
@@ -33,39 +61,15 @@ while running:
     match etat:
         case "menu" :
             screen.fill((0,0,0))
+            screen.blit(fond,(0,0))
 
-            txt_btn_1 = font.render("Jouer", True, (255,255,255))
-            txt_btn_2 = font.render("Options", True, (255,255,255))
-            txt_btn_3 = font.render("Quitter :(", True, (255,255,255))
+            txt_btn_1 = font.render("Jouer", True, (0,0,255))
+            txt_btn_2 = font.render("Options", True, (0,120,0))
+            txt_btn_3 = font.render("Quitter :(", True, (255,0,0))
             txt_leaderboard = font.render ("|||", True, (255,255,255))
 
-            pygame.draw.rect(screen,(0,255,0),(390,200,300,75))
-            pygame.draw.rect(screen,(0,255,0),(390,325,300,75))
-            pygame.draw.rect(screen,(255,0,0),(390,450,300,75))
-            pygame.draw.rect(screen,(255,0,0),(10,10,50,50))
+            pygame.draw.rect(screen,(255,0,0),(10,10,50,50), border_radius=8)
 
-            if 390<=pos_souris[0]<=690:
-                if 200<=pos_souris[1]<=275:
-                    pygame.draw.rect(screen,(75,255,75),(390,200,300,75))
-                else:
-                    pygame.draw.rect(screen,(0,255,0),(390,200,300,75))
-
-                if 325<=pos_souris[1]<=400:
-                    pygame.draw.rect(screen,(75,255,75),(390,325,300,75))
-                else:
-                    pygame.draw.rect(screen,(0,255,0),(390,325,300,75))
-
-                if 450<=pos_souris[1]<=525:
-                    pygame.draw.rect(screen,(255,75,75),(390,450,300,75))
-                else:
-                    pygame.draw.rect(screen,(255,0,0),(390,450,300,75))
-
-            elif 10<=pos_souris[0]<=60:
-                if 10<=pos_souris[1]<=60:
-                    pygame.draw.rect(screen,(255,75,75),(10,10,50,50))
-                else:
-                    pygame.draw.rect(screen,(255,0,0),(10,10,50,50))
-        
             if pos_click is not None:    
                 if 390<=pos_click[0]<=690:    
                     if 450<=pos_click[1]<=525:
@@ -89,7 +93,8 @@ while running:
             screen.blit(txt_btn_1 , (490,220))
             screen.blit(txt_btn_2 , (470,345))
             screen.blit(txt_btn_3 , (470,470))
-            screen.blit(txt_leaderboard , (17,15))
+            screen.blit(txt_leaderboard , (17,13))
+            
            
 
         case "jeu" :
@@ -121,20 +126,22 @@ while running:
             lang=["Francais","Anglais"]
             
             screen.fill((0,0,0))
+            screen.blit(fond,(0,0))
             
-            txt_btn_1 = font.render("Niveau de difficulté", True, (255,255,255))
+            txt_btn_1 = font.render("Niveau de difficulté", True, (0,0,0))
             txt_nv = font.render(nv_diff[d], True, (0,0,0))
             txt_l = font.render(lang[l], True, (0,0,0))
             txt_btn_3 = font.render("<", True, (255,255,255))
             txt_btn_4 = font.render(">", True, (255,255,255))
             
-            pygame.draw.rect(screen, (0,255,0), (340,200,400,75))
-            pygame.draw.rect(screen, (0,255,0), (255,200,75,75))
-            pygame.draw.rect(screen, (0,255,0), (750,200,75,75)) 
-            pygame.draw.rect(screen, (0,255,0), (390,325,300,75))
-            pygame.draw.rect(screen, (0,255,0), (305,325,75,75))
-            pygame.draw.rect(screen, (0,255,0), (700,325,75,75))
-            pygame.draw.rect(screen, (0,255,0), (10,10,50,50)) 
+            
+            pygame.draw.rect(screen, (75,75,75), (255,200,75,75),border_radius=8)
+            pygame.draw.rect(screen, (75,75,75), (750,200,75,75),border_radius=8) 
+    
+            pygame.draw.rect(screen, (75,75,75), (305,325,75,75),border_radius=8)
+            pygame.draw.rect(screen, (75,75,75), (700,325,75,75),border_radius=8)
+
+            pygame.draw.rect(screen, (200,0,0), (10,10,50,50),border_radius=8) 
 
             if pos_click is not None:
                 if 10<=pos_click[0]<=60:
@@ -159,7 +166,7 @@ while running:
                         pos_click=None
 
             screen.blit(txt_btn_1 , (370,150))
-            screen.blit(txt_btn_3 , (25,10))
+            screen.blit(txt_btn_3 , (20,10))
             screen.blit(txt_btn_3 , (280,215))
             screen.blit(txt_btn_3 , (330,340))
             screen.blit(txt_btn_4 , (775,215))
@@ -175,9 +182,9 @@ while running:
             txt_btn_2 = font.render("Options", True, (255,255,255))
             txt_btn_3 = font.render("Menu Principal", True, (255,255,255))
             
-            pygame.draw.rect(screen, (0,255,0), (390,200,300,75))
-            pygame.draw.rect(screen, (0,255,0), (390,325,300,75))
-            pygame.draw.rect(screen, (255,0,0), (390,450,300,75))
+            pygame.draw.rect(screen, (20,20,20), (390,200,300,75), border_radius=8)
+            pygame.draw.rect(screen, (20,20,20), (390,325,300,75), border_radius=8)
+            pygame.draw.rect(screen, (20,20,20), (390,450,300,75), border_radius=8)
 
             if pos_click is not None:
 
@@ -201,13 +208,26 @@ while running:
         case "tableau_des_scores":
 
             screen.fill((0,0,0))
+           
             
             txt_titre = font.render("Tableau des scores !", True, (255,255,255))
-            scr= font.render(str(charger_scores()), True, (255,255,255))
             txt_fermer = font.render("X", True, (255,255,255))
+
             
-            pygame.draw.rect(screen,(255,0,0),(10,10,1060,700))
+            
+
+            leaderboard = pygame.Surface((1060,700))
+            leaderboard.set_alpha(185)
+
+            screen.blit(leaderboard,(10,10))
+            
+            
+           
+            pygame.draw.rect(leaderboard,(255,0,0),(10,10,1060,700))
+            print_scores_window(highscores) 
             pygame.draw.rect(screen,(0,0,0),(10,10,50,50))
+            screen.blit(txt_titre,(350,50))
+            
 
             if 10<=pos_souris[0]<=60:
                 if 10<=pos_souris[1]<=60:
@@ -220,10 +240,9 @@ while running:
                     if 10<=pos_click[1]<=60:
                         etat=MENU
                         pos_click=None
-            
-            screen.blit(txt_titre,(350,50))
-            screen.blit(scr,(100,200))
             screen.blit(txt_fermer,(20,18))
+           
+            
 
     pygame.display.flip()
     clock.tick(60)
