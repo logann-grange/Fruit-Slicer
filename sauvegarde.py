@@ -25,4 +25,3 @@ def ajouter_score(nom_joueur, points,highscores):
     highscores.append(nouveau_score)
     highscores.sort(key=lambda x: x["Score"], reverse=True)
     sauvegarder_score(highscores)
-
