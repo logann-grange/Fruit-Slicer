@@ -39,6 +39,7 @@ def pop(list_object, time, freeze, list_used) :
             list_used.append(object.touche)
         
         time = datetime.now()
+        pygame.mixer.Sound("assets/sons/pop.mp3").play()
         
     return list_object, time, list_used
 
