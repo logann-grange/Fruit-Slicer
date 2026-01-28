@@ -7,6 +7,7 @@ screen=pygame.display.set_mode((1080,720))
 pygame.display.set_caption("Découpeur de fruits")
 clock=pygame.time.Clock()
 font= pygame.font.SysFont("Arial", 42)
+font_emo = pygame.font.SysFont("Arial", 60)
 
 #variables global
 MENU="menu"
@@ -23,7 +24,10 @@ fond_jeu = pygame.image.load("Images/game.jpg")
 fond_jeu = pygame.transform.scale(fond_jeu, (1080,720))
 logo = pygame.image.load("Images/logoo.png")
 logo = pygame.transform.scale(logo, (600,750))
-
+fond_menu = pygame.image.load("Images/fond_menu.png")
+fond_menu = pygame.transform.scale(fond_menu,(1080,720))
+fond_logo = pygame.image.load("Images/fond_logo.png")
+fond_logo = pygame.transform.scale(fond_logo,(420,150))
 
 highscores=charger_scores()
 
@@ -63,49 +67,57 @@ while running:
     match etat:
         case "menu" :
             screen.fill((0,0,0))
-            screen.blit(fond_jeu,(0,0))
+            screen.blit(fond_menu,(0,0))
             
 
-            txt_btn_1 = font.render("Jouer", True, (0,0,0))
-            txt_btn_2 = font.render("Options", True, (0,0,0))
-            txt_btn_3 = font.render("Quitter :(", True, (0,0,0))
+            txt_btn_1 = font.render("Jouer", True, (255,255,255))
+            txt_btn_2 = font.render("Options", True, (255,255,255))
+            txt_btn_3 = font.render("Quitter", True, (255,255,255))
             txt_leaderboard = font.render ("☰", True, (255,255,255))
+            emo1 = font_emo.render("▶️", True,(255,255,255))
+            emo2 = font_emo.render ("⚙️", True, (255,255,255))
+            emo3 = font_emo.render ("❌",True,(255,255,255))
 
-            pygame.draw.rect(screen,(255,0,0),(10,10,50,50), border_radius=8)
+            btn_tab=pygame.draw.rect(screen,(255,0,0),(10,10,50,50), border_radius=8)
             
-
+            
             menu_ = pygame.Surface((1080,720), pygame.SRCALPHA)
-            pygame.draw.rect(menu_,(255,50,50),(390,190,300,350),border_radius=8)
-            pygame.draw.rect(menu_,(50,50,50),(350,10,420,150),border_radius=8)
-            menu_.set_alpha(200)
+            
+            menu_.blit(fond_logo,(350,10))
+            menu_.set_alpha(250)
             screen.blit(menu_,(0,0))
             screen.blit(logo,(180,-250))
-            
-            
-            if pos_click is not None:    
-                if 390<=pos_click[0]<=690:    
-                    if 450<=pos_click[1]<=525:
-                        running=False
-                        pos_click=None
-                    elif 200<=pos_click[1]<=275:
-                        etat=JEU
-                        pos_click=None
-                    elif 325<=pos_click[1]<=400:
-                        ancien_etat=etat
-                        etat=OPTION
-                        pos_click=None
+            pygame.draw.rect(screen,(0,0,0),(350,10,420,150),3,border_radius=8)
 
-                elif 10<=pos_click[0]<=60:
-                    if 10<=pos_click[1]<=60:
-                        ancien_etat=etat
-                        etat=TABLEAU_SCORE
-                        pos_click=None
+            btn_start = pygame.draw.circle(screen,(25,25,225),(200,400),105,5)
+            btn_option = pygame.draw.circle(screen,(255,0,255),(540,400),105,5)            
+            btn_quit = pygame.draw.circle(screen,(255,0,0),(880,400),105,5)            
+            
+            if pos_click is not None:
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        if btn_start.collidepoint(event.pos):
+                            etat=JEU
+                            pos_click = None
+                        elif btn_option.collidepoint(event.pos):
+                            etat=OPTION
+                            pos_click = None
+                        elif btn_quit.collidepoint(event.pos):
+                            running=False
+                        elif btn_tab.collidepoint(event.pos):
+                            ancien_etat=etat
+                            etat=TABLEAU_SCORE
+                            pos_click=None
             
             
-            screen.blit(txt_btn_1 , (490,220))
-            screen.blit(txt_btn_2 , (470,345))
-            screen.blit(txt_btn_3 , (470,470))
+            screen.blit(txt_btn_1 , (150,430))
+            screen.blit(txt_btn_2 , (470,430))
+            screen.blit(txt_btn_3 , (820,430))
             screen.blit(txt_leaderboard , (17,13))
+            screen.blit(emo1, (175,360))
+            screen.blit(emo2,(515,360))
+            screen.blit(emo3,(855,360))
             
            
 
@@ -139,7 +151,10 @@ while running:
             lang=["Francais","Anglais"]
             
             screen.fill((0,0,0))
-            screen.blit(fond_jeu,(0,0))
+            if ancien_etat==PAUSE:
+                screen.blit(fond_jeu,(0,0))
+            else:
+                screen.blit(fond_menu,(0,0))
             
             txt_btn_1 = font.render("Niveau de difficulté", True, (0,0,0))
             txt_nv = font.render(nv_diff[d], True, (0,0,0))
@@ -148,39 +163,35 @@ while running:
             txt_btn_4 = font.render(">", True, (255,255,255))
             
             
-            pygame.draw.rect(screen, (75,75,75), (255,200,75,75),border_radius=8)
-            pygame.draw.rect(screen, (75,75,75), (750,200,75,75),border_radius=8) 
-            pygame.draw.rect(screen, (75,75,75), (305,325,75,75),border_radius=8)
-            pygame.draw.rect(screen, (75,75,75), (700,325,75,75),border_radius=8)
-            pygame.draw.rect(screen, (200,0,0), (10,10,50,50),border_radius=8)
+            btn_gauche1=pygame.draw.rect(screen, (75,75,75), (255,200,75,75),border_radius=8)
+            btn_droite1=pygame.draw.rect(screen, (75,75,75), (750,200,75,75),border_radius=8) 
+            btn_gauche2=pygame.draw.rect(screen, (75,75,75), (305,325,75,75),border_radius=8)
+            btn_droite2=pygame.draw.rect(screen, (75,75,75), (700,325,75,75),border_radius=8)
+            btn_retour=pygame.draw.rect(screen, (200,0,0), (10,10,50,50),border_radius=8)
 
             menu_ = pygame.Surface((595,300), pygame.SRCALPHA)
             pygame.draw.rect(menu_,(255,50,50),(0,0,595,300),border_radius=8)
             menu_.set_alpha(150)
             screen.blit(menu_,(240,130))
 
-
             if pos_click is not None:
-                if 10<=pos_click[0]<=60:
-                    if 10<=pos_click[1]<=60:
-                        etat=ancien_etat
-                        pos_click=None
-                elif 255<=pos_click[0]<=330:
-                    if 200<=pos_click[1]<=275:
-                        d = (d - 1) % 3
-                        pos_click=None
-                elif 750<=pos_click[0]<=825:
-                    if 200<=pos_click[1]<=275:
-                        d = (d + 1) % 3
-                        pos_click=None
-                elif 305<=pos_click[0]<=380:
-                    if 325<=pos_click[1]<=380:
-                        l = (l - 1) % 2
-                        pos_click=None
-                elif 700<=pos_click[0]<=775:
-                    if 325<=pos_click[1]<=380:
-                        l = (l + 1) % 2
-                        pos_click=None
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        if btn_gauche1.collidepoint(event.pos):
+                            d = (d - 1) % 3
+                            pos_click=None
+                        elif btn_droite1.collidepoint(event.pos):
+                            d = (d + 1) % 3
+                            pos_click=None
+                        elif btn_gauche2.collidepoint(event.pos):
+                            l = (l - 1) % 2
+                            pos_click=None
+                        elif btn_droite2.collidepoint(event.pos):
+                            l = (l + 1) % 2
+                            pos_click=None
+                        elif btn_retour.collidepoint(event.pos):
+                            etat=ancien_etat
+                            pos_click=None
 
             screen.blit(txt_btn_1 , (370,150))
             screen.blit(txt_btn_3 , (20,10))
@@ -196,6 +207,7 @@ while running:
             screen.fill((0,0,0))
             screen.blit(fond_jeu, (0,0))
             
+
             txt_btn_1 = font.render("Reprendre", True, (255,255,255))
             txt_btn_2 = font.render("Options", True, (255,255,255))
             txt_btn_3 = font.render("Menu Principal", True, (255,255,255))
@@ -226,7 +238,7 @@ while running:
         case "tableau_des_scores":
 
             screen.fill((0,0,0))
-            screen.blit(fond_jeu,(0,0))
+            screen.blit(fond_menu,(0,0))
                        
             txt_titre = font.render("Tableau des scores !", True, (255,255,255))
             txt_fermer = font.render("X", True, (255,255,255))
