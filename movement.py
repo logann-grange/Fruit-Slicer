@@ -22,9 +22,7 @@ def pop(list_object, time, freeze, list_used) :
     # timer entre chaque apparition
     if datetime.now() >= time + timedelta(seconds=random.uniform(0.8, 4)) and not freeze:
         random_num = random.randint(0, 100)
-        
-        object = None  # Initialiser object à None
-        
+        object = None
         if random_num > 90 and random_num <= 100: # Bombe 10%
             object = Bombe()
         elif random_num > 85 and random_num <= 90: #Glaçon 5%
