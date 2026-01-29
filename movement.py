@@ -27,9 +27,9 @@ def pop(list_object, time, freeze, list_used) :
         
         if random_num > 90 and random_num <= 100: # Bombe 10%
             object = Bombe()
-        elif random_num > 85 and random_num <= 90: #Glaçon 5%
+        elif random_num > 70 and random_num <= 90: #Glaçon 20%
             object = Glaçon()
-        elif random_num >= 0 and random_num <= 85: # Fruit 85% 
+        elif random_num >= 0 and random_num <= 70: # Fruit 70% 
             object = Fruit()
         
         # Vérifier que object a bien été créé

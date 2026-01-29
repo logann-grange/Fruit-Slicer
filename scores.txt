@@ -1,0 +1,18 @@
+[
+    {
+        "Nom": "Joueur1",
+        "Score": 160
+    },
+    {
+        "Nom": "Joueur1",
+        "Score": 120
+    },
+    {
+        "Nom": "Joueur1",
+        "Score": 90
+    },
+    {
+        "Nom": "Joueur1",
+        "Score": 0
+    }
+]
