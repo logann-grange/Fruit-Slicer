@@ -1,6 +1,7 @@
 import pygame
 import sys
 from sauvegarde import *
+import translation
 
 pygame.init()
 screen=pygame.display.set_mode((1080,720))
@@ -10,8 +11,9 @@ font= pygame.font.SysFont("Arial", 42)
 font_emo = pygame.font.SysFont("Arial", 60)
 
 #variables global
+l=0 #int de la langue
 MENU="menu"
-JEU="jeu"
+JEU=translation.translate("jeu", l)
 OPTION="option"
 PAUSE="pause"
 TABLEAU_SCORE="tableau_des_scores"
@@ -19,7 +21,6 @@ etat=MENU
 ancien_etat=MENU
 pos_click=None
 d=1
-l=0
 fond_jeu = pygame.image.load("Images/game.jpg")
 fond_jeu = pygame.transform.scale(fond_jeu, (1080,720))
 logo = pygame.image.load("Images/logoo.png")
@@ -36,10 +37,13 @@ def print_scores_window(highscores):
     font_score = pygame.font.SysFont('Rockwell', 25)    
     font_small = pygame.font.SysFont('Rockwell', 18)
     
-   
-    txt_title = font_title.render("MEILLEURS SCORES", 1, (0, 0, 0))
-    screen.blit(txt_title, (320, 150))
-    
+    if l==0:
+        txt_title = font_title.render("MEILLEURS SCORES", 1, (0, 0, 0))
+        screen.blit(txt_title, (320, 150))
+    else:
+        txt_title = font_title.render("Best Score", 1, (0,0,0))
+        screen.blit(txt_title, (320,150))
+
     if not highscores:
         txt_empty = font_score.render("Aucun score enregistré", 1, (100, 100, 100))
         screen.blit(txt_empty, (280, 200))
@@ -70,9 +74,9 @@ while running:
             screen.blit(fond_menu,(0,0))
             
 
-            txt_btn_1 = font.render("Jouer", True, (255,255,255))
-            txt_btn_2 = font.render("Options", True, (255,255,255))
-            txt_btn_3 = font.render("Quitter", True, (255,255,255))
+            txt_btn_1 = font.render(translation.translate("Jouer", l), True, (255,255,255))
+            txt_btn_2 = font.render(translation.translate("Options", l), True, (255,255,255))
+            txt_btn_3 = font.render(translation.translate("Quitter", l), True, (255,255,255))
             txt_leaderboard = font.render ("☰", True, (255,255,255))
             emo1 = font_emo.render("▶️", True,(255,255,255))
             emo2 = font_emo.render ("⚙️", True, (255,255,255))
@@ -111,14 +115,13 @@ while running:
                             pos_click=None
             
             
-            screen.blit(txt_btn_1 , (150,430))
-            screen.blit(txt_btn_2 , (470,430))
-            screen.blit(txt_btn_3 , (820,430))
+            screen.blit(txt_btn_1 , (200-font.size(translation.translate("Jouer", l))[0]/2,430))
+            screen.blit(txt_btn_2 , (540-font.size(translation.translate("Options", l))[0]/2,430))
+            screen.blit(txt_btn_3 , (880-font.size(translation.translate("Quitter", l))[0]/2,430))
             screen.blit(txt_leaderboard , (17,13))
             screen.blit(emo1, (175,360))
             screen.blit(emo2,(515,360))
             screen.blit(emo3,(855,360))
-            
            
 
         case "jeu" :
@@ -156,9 +159,9 @@ while running:
             else:
                 screen.blit(fond_menu,(0,0))
             
-            txt_btn_1 = font.render("Niveau de difficulté", True, (0,0,0))
-            txt_nv = font.render(nv_diff[d], True, (0,0,0))
-            txt_l = font.render(lang[l], True, (0,0,0))
+            txt_btn_1 = font.render(translation.translate("Niveau de difficulté", l), True, (0,0,0))
+            txt_nv = font.render(translation.translate(nv_diff[d], l), True, (0,0,0))
+            txt_l = font.render(translation.translate(lang[l], l), True, (0,0,0))
             txt_btn_3 = font.render("<", True, (255,255,255))
             txt_btn_4 = font.render(">", True, (255,255,255))
             
@@ -193,14 +196,14 @@ while running:
                             etat=ancien_etat
                             pos_click=None
 
-            screen.blit(txt_btn_1 , (370,150))
+            screen.blit(txt_btn_1 , (540-font.size(translation.translate("Niveau de difficulté", l))[0]/2,150))
             screen.blit(txt_btn_3 , (20,10))
             screen.blit(txt_btn_3 , (280,215))
             screen.blit(txt_btn_3 , (330,340))
             screen.blit(txt_btn_4 , (775,215))
             screen.blit(txt_btn_4 , (725,340))
-            screen.blit(txt_nv , (470,220))
-            screen.blit(txt_l, (460,345))
+            screen.blit(txt_nv , (540-font.size(translation.translate(nv_diff[d], l))[0]/2,220))
+            screen.blit(txt_l, (540-font.size(translation.translate(lang[l], l))[0]/2,345))
             
 
         case "pause":
@@ -208,9 +211,9 @@ while running:
             screen.blit(fond_jeu, (0,0))
             
 
-            txt_btn_1 = font.render("Reprendre", True, (255,255,255))
-            txt_btn_2 = font.render("Options", True, (255,255,255))
-            txt_btn_3 = font.render("Menu Principal", True, (255,255,255))
+            txt_btn_1 = font.render(translation.translate("Reprendre", l), True, (255,255,255))
+            txt_btn_2 = font.render(translation.translate("Options", l), True, (255,255,255))
+            txt_btn_3 = font.render(translation.translate("Menu Principal",l), True, (255,255,255))
             
             pygame.draw.rect(screen, (20,20,20), (390,200,300,75), border_radius=8)
             pygame.draw.rect(screen, (20,20,20), (390,325,300,75), border_radius=8)
@@ -230,9 +233,9 @@ while running:
                         etat=MENU  
                         pos_click=None 
 
-            screen.blit(txt_btn_1 , (450,220))
-            screen.blit(txt_btn_2 , (470,345))
-            screen.blit(txt_btn_3 , (400,470))
+            screen.blit(txt_btn_1 , (390+(300-font.size(translation.translate("Reprendre", l))[0])/2,220))
+            screen.blit(txt_btn_2 , (390+(300-font.size(translation.translate("Options", l))[0])/2,345))
+            screen.blit(txt_btn_3 , (390+(300-font.size(translation.translate("Menu Principal", l))[0])/2,470))
 
 
         case "tableau_des_scores":
@@ -251,7 +254,11 @@ while running:
             print_scores_window(highscores) 
             
             pygame.draw.rect(screen,(0,0,0),(10,10,50,50))
-            screen.blit(txt_titre,(350,50))
+            if l==0:
+                screen.blit(txt_titre,(350,50))
+            else:
+                txt_titre=font.render("Leaderboard",True,(255,255,255))
+                screen.blit(txt_titre,(350,50))
 
             if 10<=pos_souris[0]<=60:
                 if 10<=pos_souris[1]<=60:
