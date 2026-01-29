@@ -1,8 +1,7 @@
 import random
-import string
 import pygame
 
-list_image = ["assets/images/pomme.png", "assets/images/banane.png"]
+list_image = ["assets/images/pomme.png", "assets/images/banane.png", "assets/images/pasteque.png", "assets/images/fraise.png", "assets/images/citron.png"]
 list_touche=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",",",";",":","!","ù","$","*"]
 
 class Fruit:
@@ -10,20 +9,18 @@ class Fruit:
         self.size = 90
         self.image_origin = pygame.transform.scale(pygame.image.load(list_image[random.randint(0,len(list_image)-1)]), (self.size, self.size))
         self.image = self.image_origin
-        self.image
-        self.coord_x = random.randint(0, 1000-self.size) #à modifier selon la taille x de l'écran et du fruit en gardant un format (0, 1000-taille_fruit)
-        self.coord_y = 750 #à modifier par la taille y max de l'écran
+        self.coord_x = random.randint(0, 1080-self.size) #à modifier selon la taille x de l'écran et du fruit en gardant un format (0, 1080-taille_fruit)
+        self.coord_y = 720 #à modifier par la taille y max de l'écran
         self.speed_y = -50 #50
         self.speed_x = random.uniform(-10, 10)
         self.speed_change_y = random.uniform(1.5, 2.7) #1.5 2.7
         self.angle = 0
         self.angle_direction = random.uniform(-3, 3)
         self.touche = list_touche[random.randint(0, len(list_touche)-1)]
-        #self.image_touche = font.render(self.touche, 1, (0, 0, 0))
     
     def acceleration(self):
         self.speed_y += self.speed_change_y
-        if self.coord_x < 0 or self.coord_x > 1000-self.size :
+        if self.coord_x < 0 or self.coord_x > 1080-self.size :
             self.speed_x = -self.speed_x*0.7
     
     def movement(self):
