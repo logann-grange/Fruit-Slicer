@@ -36,6 +36,7 @@ def print_scores_window(screen, highscores):
             
 
 def menu(screen, etat, ancien_etat) :
+    ancien_screen = screen
     global l
     MENU="menu"
     JEU=translation.translate("jeu", l)
@@ -75,6 +76,9 @@ def menu(screen, etat, ancien_etat) :
                     elif btn_quit.collidepoint(pos_click):
                         return True  # Quitter
                     elif btn_tab.collidepoint(pos_click):
+                        if ancien_etat == PAUSE :
+                            screen.blit(ancien_screen, (0,0))
+                            pygame.display.flip()
                         ancien_etat = etat
                         etat = TABLEAU_SCORE
                 
