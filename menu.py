@@ -7,6 +7,7 @@ pygame.init()
 pygame.display.set_caption("Découpeur de fruits")
 clock=pygame.time.Clock()
 font= pygame.font.SysFont("Arial", 42)
+background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'), (1080, 720))
 
 #variables global
 l=0 #int de la langue
@@ -80,6 +81,7 @@ def menu(screen, etat, ancien_etat) :
                     if btn_start.collidepoint(pos_click):
                         return False  # Lancer le jeu
                     elif btn_option.collidepoint(pos_click):
+                        ancien_etat = etat
                         etat = OPTION
                     elif btn_quit.collidepoint(pos_click):
                         return True  # Quitter
@@ -97,9 +99,13 @@ def menu(screen, etat, ancien_etat) :
                     elif btn_droite2.collidepoint(pos_click):
                         l = (l + 1) % 2
                     elif btn_retour.collidepoint(pos_click):
+                        screen.fill((0,0,0))
+                        screen.blit(background, (0, 0))
                         etat = ancien_etat
                 
                 elif etat == PAUSE:
+                    screen.fill((0,0,0))
+                    screen.blit(background, (0, 0))
                     if btn_reprendre.collidepoint(pos_click):
                         return False  # Reprendre le jeu
                     elif btn_options.collidepoint(pos_click):
@@ -180,10 +186,12 @@ def menu(screen, etat, ancien_etat) :
                 screen.blit(txt_l, (540-font.size(translation.translate(lang[l], l))[0]/2,345))
 
             case "pause":
+                ancien_etat=JEU
+                
                 if print_fond_pause :
                     fond_pause = pygame.Surface((1080, 720), pygame.SRCALPHA)
                     pygame.draw.rect(fond_pause, (0, 0, 0, 128), (0, 0, 1080, 720))
-                    fond_pause.set_alpha(180)
+                    fond_pause.set_alpha(250)
                     screen.blit(fond_pause, (0, 0))
                     print_fond_pause = False
 

@@ -1,10 +1,11 @@
 import pygame
 import movement
-import logic, menu
+import logic
 from datetime import datetime, timedelta
 from fruit import Fruit
 from bombe import Bombe
 from glaçon import Glaçon
+from menu import *
 
 logo_pause=pygame.image.load("assets/images/pause.png")
 logo_pause=pygame.transform.scale(logo_pause,(25,25))
@@ -51,7 +52,7 @@ running = True
 
 while running:
     # Afficher le menu principal
-    menu_result = menu.menu(screen, "menu", "menu")
+    menu_result = menu(screen, "menu", "menu")
     
     if menu_result:  # Si menu retourne True, on doit quitter
         running = False
@@ -84,6 +85,7 @@ while running:
                     if event.key == pygame.K_ESCAPE:
                         # Dessiner l'état actuel du jeu avant d'ouvrir le menu pause
                         screen.blit(background, (0, 0))
+                        etat="pause"
                         for obj in game_vars['list_object']:
                             screen.blit(obj.image, (obj.coord_x, obj.coord_y))
                             screen.blit(
@@ -93,7 +95,7 @@ while running:
                         pygame.display.flip()
                         
                         # Appeler le menu pause
-                        pause_result = menu.menu(screen, "pause", "jeu")
+                        pause_result = menu(screen, "pause", "jeu")
                         if pause_result:  # Si True, quitter le programme
                             running = False
                             game_running = False
