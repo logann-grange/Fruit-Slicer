@@ -13,6 +13,10 @@
     },
     {
         "Nom": "Joueur",
+        "Score": 280
+    },
+    {
+        "Nom": "Joueur",
         "Score": 220
     },
     {
@@ -54,6 +58,10 @@
     {
         "Nom": "Joueur",
         "Score": 30
+    },
+    {
+        "Nom": "Joueur",
+        "Score": 20
     },
     {
         "Nom": "Joueur",

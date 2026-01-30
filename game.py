@@ -43,7 +43,7 @@ def switch_music(freeze):
         
         pygame.mixer.music.load("assets/sons/musique_fond_tunnel.wav")
         pygame.mixer.music.play(-1, start=music_pos)
-        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.set_volume(0.55)
         music_state = "tunnel"
         music_start_time = current_time - (music_pos * 1000)
         
@@ -214,7 +214,9 @@ while running:
                             if isinstance(object, Glaçon):
                                 game_vars['freeze'] = True
                                 game_vars['time_freeze'] = datetime.now()
-                                pygame.mixer.Sound("assets/sons/glace.wav").play()
+                                sound_glace = pygame.mixer.Sound("assets/sons/glace.wav")
+                                sound_glace.set_volume(0.2)
+                                sound_glace.play()
                             
                             if isinstance(object, Bombe):
                                 game_vars['boom'] = True
