@@ -81,12 +81,16 @@ def reset_game():
         'coord_boom': None
     }
 
-def print_defaite():
+def print_defaite(list_object=None):
     nom_joueur = ""
     saisie_terminee = False
     
     while not saisie_terminee:
-        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        if list_object != None:
+            for obj in list_object:
+                screen.blit(obj.image, (obj.coord_x, obj.coord_y))
+                screen.blit(font.render(obj.touche.upper(), 1, (0, 0, 0)), (obj.coord_x + 20, obj.coord_y - 30))
         txt_defaite = font.render("Vous avez perdu !", True, (255, 0, 0))
         screen.blit(txt_defaite, (350, 200))
         screen.blit(font.render(f"Score final : {point}", True, (255, 255, 255)), (400, 280))
@@ -123,6 +127,11 @@ def print_defaite():
 
 running = True
 
+# Charger la musique du menu
+pygame.mixer.music.load("assets/sons/music_menu.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.1)
+
 while running:
     # Afficher le menu principal
     
@@ -143,7 +152,8 @@ while running:
     if isinstance(difficulty, int):
         difficulty = difficulty_labels[difficulty % len(difficulty_labels)]
     
-    # Initialiser la musique pour cette partie
+    # Arrêter la musique du menu et lancer celle du jeu
+    pygame.mixer.music.stop()
     pygame.mixer.music.load("assets/sons/musique_fond.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.1)
@@ -282,11 +292,16 @@ while running:
                 print_boom(game_vars['boom'], game_vars['coord_boom'])
                 game_vars['life'] = 0
                 game_vars['stop'] = True
-                nom_joueur = print_defaite()
+                nom_joueur = print_defaite(list_object=game_vars['list_object'])
                 charger_score = sauvegarde.charger_scores()
                 sauvegarde.ajouter_score(nom_joueur,point, charger_score) 
                 score_saved = True
                 game_running = False  # Sortir de la boucle de jeu pour retourner au menu
+                # Recharger la musique du menu
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load("assets/sons/music_menu.mp3")
+                pygame.mixer.music.play(-1)
+                pygame.mixer.music.set_volume(0.1)
             
         
         else:
