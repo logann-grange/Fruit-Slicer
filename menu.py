@@ -12,10 +12,10 @@ background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.pn
 #variables global
 l=0 #int de la langue
 
-highscores=charger_scores()
 
-def print_scores_window(screen, highscores):
+def print_scores_window(screen):
     global l
+    highscores=charger_scores()
     font_title = pygame.font.SysFont('Rockwell', 35, bold=True)
     font_score = pygame.font.SysFont('Rockwell', 25)    
     font_small = pygame.font.SysFont('Rockwell', 18)
@@ -35,7 +35,7 @@ def print_scores_window(screen, highscores):
             y_pos += 40
             
 
-def menu(screen, etat, ancien_etat, list_object=None, mode=0) :
+def menu(screen, etat, ancien_etat, difficulty, list_object=None, mode=0) :
     global l
     MENU="menu"
     JEU=translation.translate("jeu", l)
@@ -68,23 +68,24 @@ def menu(screen, etat, ancien_etat, list_object=None, mode=0) :
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True  # Retourner True pour quitter le programme
+                return True, mode, difficulty # Retourner True pour quitter le programme
             if event.type == pygame.KEYDOWN:
                     if etat == PAUSE and event.key == pygame.K_ESCAPE:
-                        return False # retour en jeu
+                        return False, mode, difficulty # retour en jeu
             
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 # Gérer les clics selon l'état actuel du menu
+                pygame.mixer.Sound("assets/sons/pop.mp3").play()
                 pos_click = event.pos
                 
                 if etat == MENU:
                     if btn_start.collidepoint(pos_click):
-                        return False  # Lancer le jeu
+                        return False, mode, difficulty  # Lancer le jeu
                     elif btn_option.collidepoint(pos_click):
                         ancien_etat = etat
                         etat = OPTION
                     elif btn_quit.collidepoint(pos_click):
-                        return True  # Quitter
+                        return True, mode, difficulty  # Quitter
                     elif btn_tab.collidepoint(pos_click):
                         ancien_etat = etat
                         etat = TABLEAU_SCORE
@@ -111,7 +112,7 @@ def menu(screen, etat, ancien_etat, list_object=None, mode=0) :
                     screen.fill((0,0,0))
                     screen.blit(background, (0, 0))
                     if btn_reprendre.collidepoint(pos_click):
-                        return False  # Reprendre le jeu
+                        return False, mode, difficulty  # Reprendre le jeu
                     elif btn_options.collidepoint(pos_click):
                         ancien_etat = PAUSE
                         etat = OPTION
@@ -159,6 +160,7 @@ def menu(screen, etat, ancien_etat, list_object=None, mode=0) :
             case "option" :
                 nv_diff=["Facile","Moyen","Difficile"]
                 lang=["Francais","Anglais"]
+                difficulty = nv_diff[d]
             
                 screen.fill((0,0,0))
                 if ancien_etat==PAUSE:
@@ -238,7 +240,7 @@ def menu(screen, etat, ancien_etat, list_object=None, mode=0) :
                 menu_.set_alpha(150)
                 screen.blit(menu_,(240,130))
 
-                print_scores_window(screen, highscores) 
+                print_scores_window(screen) 
 
                 btn_fermer = pygame.draw.rect(screen,(0,0,0),(10,10,50,50))
                 screen.blit(txt_titre,(350,50))
@@ -254,4 +256,4 @@ def menu(screen, etat, ancien_etat, list_object=None, mode=0) :
         pygame.display.flip()
         clock.tick(60)
 
-    return False  # Retourner False pour continuer le jeu
+    return False, mode, difficulty  # Retourner False pour continuer le jeu
