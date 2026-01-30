@@ -17,6 +17,8 @@ score_saved = False
 last_cut_time = None
 COMBO_WINDOW = 0.5  # Fenêtre de 500ms pour le combo
 fruits_cuts = 0
+combo_display_time = None  # Pour afficher le combo pendant 1 seconde
+combo_count = 0  # Le nombre de fruits du dernier combo
 
 screen = pygame.display.set_mode((1080, 720))
 font = pygame.font.SysFont('Arial', 40, bold=True)
@@ -135,6 +137,8 @@ while running:
     point = 0
     score_saved = False
     game_running = True
+    combo_display_time = None
+    combo_count = 0
     difficulty_labels = ["Facile", "Moyen", "Difficile"]
     if isinstance(difficulty, int):
         difficulty = difficulty_labels[difficulty % len(difficulty_labels)]
@@ -165,6 +169,17 @@ while running:
             score_text = font.render(f"Score: {point}", 1, (0, 0, 0))
             score_rect = score_text.get_rect(center=(540, 30))
             screen.blit(score_text, score_rect)
+            
+            # Afficher le combo s'il est actif
+            if combo_display_time is not None:
+                elapsed = pygame.time.get_ticks() - combo_display_time
+                if elapsed < 1000:  # Afficher pendant 1 seconde
+                    combo_font = pygame.font.SysFont('Arial', 60, bold=True)
+                    combo_text = combo_font.render(f"COMBO x{combo_count}!", 1, (255, 215, 0))
+                    combo_rect = combo_text.get_rect(center=(540, 360))
+                    screen.blit(combo_text, combo_rect)
+                else:
+                    combo_display_time = None
             
             # Gestion des événements
             for event in pygame.event.get():
@@ -228,6 +243,8 @@ while running:
                 # Vérifier le combo après 500ms de pause ou 2+ fruits
                     if fruits_cuts >= 2:
                         point = sauvegarde.score(point, fruits_cuts) 
+                        combo_count = fruits_cuts
+                        combo_display_time = pygame.time.get_ticks()
                         fruits_cuts = 0
                         last_cut_time = None
                     else:
