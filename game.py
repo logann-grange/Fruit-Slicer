@@ -1,5 +1,4 @@
 import pygame
-import threading
 import movement
 import logic, menu
 from datetime import datetime, timedelta
@@ -104,13 +103,10 @@ def game():
                         screen.blit(background, (0, 0))
                         for obj in game_vars['list_object']:
                             screen.blit(obj.image, (obj.coord_x, obj.coord_y))
-                            screen.blit(
-                                font.render(obj.touche.upper(), 1, (0, 0, 0)),
-                                (obj.coord_x + 20, obj.coord_y - 30)
-                            )
+                            screen.blit(font.render(obj.touche.upper(), 1, (0, 0, 0)),(obj.coord_x + 20, obj.coord_y - 30))
                         pygame.display.flip()        
                         # Appeler le menu pause
-                        pause_result = menu.menu(screen, "pause", "jeu")
+                        pause_result = menu.menu(screen, "pause", "jeu", game_vars["list_object"])
                         if pause_result:  # Si True, quitter le programme
                             return True
                         # Si False, continuer le jeu

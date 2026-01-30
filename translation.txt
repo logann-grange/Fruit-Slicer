@@ -11,3 +11,5 @@ Niveau de difficulté:Difficulty level
 Facile:Easy
 Moyen:Normal
 Difficile:Difficult
+Clavier:Keyboard
+Souris:Mouse

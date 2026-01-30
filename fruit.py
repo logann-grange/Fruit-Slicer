@@ -1,7 +1,7 @@
 import random
 import pygame
 
-list_image = ["assets/images/pomme.png", "assets/images/banane.png", "assets/images/pasteque.png", "assets/images/fraise.png", "assets/images/citron.png"]
+list_image = ["assets/images/pomme.png", "assets/images/banane.png", "assets/images/pasteque.png", "assets/images/fraise.png", "assets/images/citron.png", "assets/images/raisin.png", "assets/images/orange.png"]
 list_touche=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",",",";",":","!","ù","$","*"]
 
 class Fruit:

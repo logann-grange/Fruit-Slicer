@@ -7,7 +7,7 @@ pygame.init()
 pygame.display.set_caption("Découpeur de fruits")
 clock=pygame.time.Clock()
 font= pygame.font.SysFont("Arial", 42)
-font_emo = pygame.font.SysFont("Arial", 60)
+background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'), (1080, 720))
 
 #variables global
 l=0 #int de la langue
@@ -35,8 +35,7 @@ def print_scores_window(screen, highscores):
             y_pos += 40
             
 
-def menu(screen, etat, ancien_etat) :
-    ancien_screen = screen
+def menu(screen, etat, ancien_etat, list_object=None, mode=0) :
     global l
     MENU="menu"
     JEU=translation.translate("jeu", l)
@@ -45,6 +44,7 @@ def menu(screen, etat, ancien_etat) :
     TABLEAU_SCORE="tableau_des_scores"
     d=1
     print_fond_pause = True
+    str_mode = ["Clavier", "Souris"]
     fond_jeu = pygame.image.load("assets/images/game.jpg")
     fond_jeu = pygame.transform.scale(fond_jeu, (1080,720))
     logo = pygame.image.load("assets/images/logoo.png")
@@ -53,16 +53,25 @@ def menu(screen, etat, ancien_etat) :
     fond_menu = pygame.transform.scale(fond_menu,(1080,720))
     fond_logo = pygame.image.load("assets/images/fond_logo.png")
     fond_logo = pygame.transform.scale(fond_logo,(420,150))
+    menu_logo=pygame.image.load("assets/images/menu.png")
+    menu_logo=pygame.transform.scale(menu_logo,(40,40))
+    pause_logo=pygame.image.load("assets/images/pause.png")
+    pause_logo=pygame.transform.scale(pause_logo,(20,20))
+    play_logo=pygame.image.load("assets/images/play.png")
+    play_logo=pygame.transform.scale(play_logo,(70,70))
+    quit_logo=pygame.image.load("assets/images/quit.png")
+    quit_logo=pygame.transform.scale(quit_logo,(70,70))
+    settings_logo=pygame.image.load("assets/images/settings.png")
+    settings_logo=pygame.transform.scale(settings_logo,(70,70))
     running=True
     
     while running:
-        # UNE SEULE boucle d'événements pour tout le menu
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True  # Retourner True pour quitter le programme
             if event.type == pygame.KEYDOWN:
                     if etat == PAUSE and event.key == pygame.K_ESCAPE:
-                        return 0 # retour en jeu
+                        return False # retour en jeu
             
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 # Gérer les clics selon l'état actuel du menu
@@ -72,13 +81,11 @@ def menu(screen, etat, ancien_etat) :
                     if btn_start.collidepoint(pos_click):
                         return False  # Lancer le jeu
                     elif btn_option.collidepoint(pos_click):
+                        ancien_etat = etat
                         etat = OPTION
                     elif btn_quit.collidepoint(pos_click):
                         return True  # Quitter
                     elif btn_tab.collidepoint(pos_click):
-                        if ancien_etat == PAUSE :
-                            screen.blit(ancien_screen, (0,0))
-                            pygame.display.flip()
                         ancien_etat = etat
                         etat = TABLEAU_SCORE
                 
@@ -91,10 +98,18 @@ def menu(screen, etat, ancien_etat) :
                         l = (l - 1) % 2
                     elif btn_droite2.collidepoint(pos_click):
                         l = (l + 1) % 2
+                    elif btn_gauche3.collidepoint(pos_click):
+                        mode = (mode - 1) % 2
+                    elif btn_droite3.collidepoint(pos_click):
+                        mode = (mode + 1) % 2
                     elif btn_retour.collidepoint(pos_click):
+                        screen.fill((0,0,0))
+                        screen.blit(background, (0, 0))
                         etat = ancien_etat
                 
                 elif etat == PAUSE:
+                    screen.fill((0,0,0))
+                    screen.blit(background, (0, 0))
                     if btn_reprendre.collidepoint(pos_click):
                         return False  # Reprendre le jeu
                     elif btn_options.collidepoint(pos_click):
@@ -114,14 +129,9 @@ def menu(screen, etat, ancien_etat) :
                 screen.fill((0,0,0))
                 screen.blit(fond_menu,(0,0))
 
-                txt_btn_1 = font.render(translation.translate("Jouer", l), True, (255,255,255))
-                txt_btn_2 = font.render(translation.translate("Options", l), True, (255,255,255))
-                txt_btn_3 = font.render(translation.translate("Quitter", l), True, (255,255,255))
-                txt_leaderboard = font.render ("☰", True, (255,255,255))
-                emo1 = font_emo.render("▶️", True,(255,255,255))
-                emo2 = font_emo.render ("⚙️", True, (255,255,255))
-                emo3 = font_emo.render ("❌",True,(255,255,255))
-
+                txt_btn_1 = font.render(translation.translate("Jouer", l), True, (0,0,0))
+                txt_btn_2 = font.render(translation.translate("Options", l), True, (0,0,0))
+                txt_btn_3 = font.render(translation.translate("Quitter", l), True, (0,0,0))
                 btn_tab = pygame.draw.rect(screen,(255,0,0),(10,10,50,50), border_radius=8)
 
                 menu_ = pygame.Surface((1080,720), pygame.SRCALPHA)
@@ -131,17 +141,20 @@ def menu(screen, etat, ancien_etat) :
                 screen.blit(logo,(180,-250))
                 pygame.draw.rect(screen,(0,0,0),(350,10,420,150),3,border_radius=8)
 
-                btn_start = pygame.draw.circle(screen,(25,25,225),(200,400),105,5)
-                btn_option = pygame.draw.circle(screen,(255,0,255),(540,400),105,5)            
-                btn_quit = pygame.draw.circle(screen,(255,0,0),(880,400),105,5)
+                btn_start = pygame.draw.circle(screen,(73,78,210),(200,400),105,105)
+                pygame.draw.circle(screen,(0,0,0),(200,400),105,5)
+                btn_option = pygame.draw.circle(screen,(160,70,210),(540,400),105,105)
+                pygame.draw.circle(screen,(0,0,0),(540,400),105,5)
+                btn_quit = pygame.draw.circle(screen,(255,0,0),(880,400),105,105)
+                pygame.draw.circle(screen,(0,0,0),(880,400),105,5)
 
                 screen.blit(txt_btn_1 , (200-font.size(translation.translate("Jouer", l))[0]/2,430))
                 screen.blit(txt_btn_2 , (540-font.size(translation.translate("Options", l))[0]/2,430))
                 screen.blit(txt_btn_3 , (880-font.size(translation.translate("Quitter", l))[0]/2,430))
-                screen.blit(txt_leaderboard , (17,13))
-                screen.blit(emo1, (175,360))
-                screen.blit(emo2,(515,360))
-                screen.blit(emo3,(855,360))
+                screen.blit(menu_logo , (17,13))
+                screen.blit(play_logo, (160,350))
+                screen.blit(settings_logo,(500,350))
+                screen.blit(quit_logo,(840,350))
 
             case "option" :
                 nv_diff=["Facile","Moyen","Difficile"]
@@ -156,6 +169,7 @@ def menu(screen, etat, ancien_etat) :
                 txt_btn_1 = font.render(translation.translate("Niveau de difficulté", l), True, (0,0,0))
                 txt_nv = font.render(translation.translate(nv_diff[d], l), True, (0,0,0))
                 txt_l = font.render(translation.translate(lang[l], l), True, (0,0,0))
+                txt_mode = font.render(translation.translate(str_mode[mode], l), True, (0,0,0))
                 txt_btn_3 = font.render("<", True, (255,255,255))
                 txt_btn_4 = font.render(">", True, (255,255,255))
             
@@ -163,10 +177,12 @@ def menu(screen, etat, ancien_etat) :
                 btn_droite1=pygame.draw.rect(screen, (75,75,75), (750,200,75,75),border_radius=8) 
                 btn_gauche2=pygame.draw.rect(screen, (75,75,75), (305,325,75,75),border_radius=8)
                 btn_droite2=pygame.draw.rect(screen, (75,75,75), (700,325,75,75),border_radius=8)
+                btn_gauche3=pygame.draw.rect(screen, (75,75,75), (305,450,75,75),border_radius=8)
+                btn_droite3=pygame.draw.rect(screen, (75,75,75), (700,450,75,75),border_radius=8)
                 btn_retour=pygame.draw.rect(screen, (200,0,0), (10,10,50,50),border_radius=8)
 
-                menu_ = pygame.Surface((595,300), pygame.SRCALPHA)
-                pygame.draw.rect(menu_,(255,50,50),(0,0,595,300),border_radius=8)
+                menu_ = pygame.Surface((595,420), pygame.SRCALPHA)
+                pygame.draw.rect(menu_,(255,50,50),(0,0,595,420),border_radius=8)
                 menu_.set_alpha(150)
                 screen.blit(menu_,(240,130))
 
@@ -174,16 +190,27 @@ def menu(screen, etat, ancien_etat) :
                 screen.blit(txt_btn_3 , (20,10))
                 screen.blit(txt_btn_3 , (280,215))
                 screen.blit(txt_btn_3 , (330,340))
+                screen.blit(txt_btn_3 , (330,470))
                 screen.blit(txt_btn_4 , (775,215))
                 screen.blit(txt_btn_4 , (725,340))
-                screen.blit(txt_nv , (540-font.size(translation.translate(nv_diff[d], l))[0]/2,220))
+                screen.blit(txt_btn_4 , (725,470))
+                screen.blit(txt_nv , (540-font.size(translation.translate(nv_diff[d], l))[0]/2,210))
                 screen.blit(txt_l, (540-font.size(translation.translate(lang[l], l))[0]/2,345))
+                screen.blit(txt_mode, (540-font.size(translation.translate(str_mode[mode], l))[0]/2,470))
 
             case "pause":
+                ancien_etat=JEU
+                
+                # affichage des objets du jeu
+                if list_object != None :
+                    for obj in list_object :
+                        screen.blit(obj.image, (obj.coord_x, obj.coord_y))
+                        screen.blit(font.render(obj.touche.upper(), 1, (0, 0, 0)),(obj.coord_x + 20, obj.coord_y - 30))
+
                 if print_fond_pause :
                     fond_pause = pygame.Surface((1080, 720), pygame.SRCALPHA)
                     pygame.draw.rect(fond_pause, (0, 0, 0, 128), (0, 0, 1080, 720))
-                    fond_pause.set_alpha(180)
+                    fond_pause.set_alpha(250)
                     screen.blit(fond_pause, (0, 0))
                     print_fond_pause = False
 
