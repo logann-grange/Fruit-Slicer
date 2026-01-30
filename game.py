@@ -77,10 +77,13 @@ def print_defaite(point, list_object=None):
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.1)
 
+    background = pygame.Surface((570, 500), pygame.SRCALPHA)
+    background.fill((0, 0, 0, 128))
+    screen.blit(background, (275, 100))
 
-    
+                    
     while not saisie_terminee:
-        screen.blit(background, (0, 0))
+        #screen.blit(background, (0, 0))
         if list_object != None:
             for obj in list_object:
                 screen.blit(obj.image, (obj.coord_x, obj.coord_y))
