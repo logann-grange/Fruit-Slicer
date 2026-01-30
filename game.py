@@ -84,6 +84,10 @@ def reset_game():
 def print_defaite(list_object=None):
     nom_joueur = ""
     saisie_terminee = False
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("assets/sons/game_over.mp3")
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.1)
     
     while not saisie_terminee:
         screen.blit(background, (0, 0))

@@ -1,7 +1,10 @@
 import json
 
 def score(points,nb_coupe):
-    points+= nb_coupe*10
+    if nb_coupe==1:
+        points+=nb_coupe*10
+    else:
+        points+=nb_coupe*20
     return points
     
 def charger_scores(score_file="scores.txt"):
