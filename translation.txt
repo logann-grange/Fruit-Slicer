@@ -1,8 +1,13 @@
-français:english
-jouer:play
-options:options
-quitter:quit
-reprendre:continue
-menu principal:main menu
-niveau de difficulté:difficulty level
-langue:language
+Français:French
+Anglais:English
+Jouer:Play
+Jeu:Game
+Options:Options
+Quitter:Quit
+Reprendre:Continue
+Menu Principal:Main Menu
+Langue:Language
+Niveau de difficulté:Difficulty level
+Facile:Easy
+Moyen:Normal
+Difficile:Difficult

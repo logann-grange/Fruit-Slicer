@@ -1,6 +1,6 @@
 import pygame
 import movement
-import logic
+import logic, menu
 from datetime import datetime, timedelta
 from fruit import Fruit
 from bombe import Bombe
@@ -9,108 +9,280 @@ import sauvegarde
 import time
 
 pygame.init()
+pygame.mixer.init()
+pygame.display.set_caption("Découpeur de fruits")
 
-screen = pygame.display.set_mode((1000, 750))
-font = pygame.font.SysFont('Arial', 40, bold=True)
-clock = pygame.time.Clock()
-
-list_object = []
-time_move = datetime.now()
-time_pop = time_move
-time_freeze = None
-background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'), (1000, 750))
-background_freeze = pygame.transform.scale(pygame.image.load('assets/images/fond_glace.png'), (1000, 750))
-img_boom = pygame.transform.scale(pygame.image.load("assets/images/bombe.png"), (300, 300))
-background_freeze.set_alpha(60)
-running = True
-freeze = False
-stop = False
-list_used = []
-life = 3
-boom = False
-defeat = False
-coord_boom = None
-fruits_cuts=0
 point=0
 score_saved = False
 last_cut_time = None
 COMBO_WINDOW = 0.5  # Fenêtre de 500ms pour le combo
+fruits_cuts = 0
 
-def print_boom(boom, coord_boom) :
-    if boom :
+screen = pygame.display.set_mode((1080, 720))
+font = pygame.font.SysFont('Arial', 40, bold=True)
+clock = pygame.time.Clock()
+
+background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'), (1080, 720))
+background_freeze = pygame.transform.scale(pygame.image.load('assets/images/fond_glace.png'), (1080, 720))
+img_boom = pygame.transform.scale(pygame.image.load("assets/images/boom.png"), (300, 300))
+background_freeze.set_alpha(60)
+heart1, heart2, heart3 = pygame.transform.scale(pygame.image.load('assets/images/heart.png'), (50, 50)), pygame.transform.scale(pygame.image.load('assets/images/heart.png'), (50, 50)), pygame.transform.scale(pygame.image.load('assets/images/heart.png'), (50, 50))
+hearts = [heart1, heart2, heart3]
+
+# Variables pour gérer la musique pendant le jeu
+music_state = "normal"  # "normal" ou "tunnel"
+music_start_time = 0
+
+def switch_music(freeze):
+    global music_state, music_start_time
+    
+    if freeze and music_state == "normal":
+        # Passer à la version tunnel
+        current_time = pygame.time.get_ticks()
+        music_pos = (current_time - music_start_time) / 1000.0
+        
+        pygame.mixer.music.load("assets/sons/musique_fond_tunnel.wav")
+        pygame.mixer.music.play(-1, start=music_pos)
+        pygame.mixer.music.set_volume(0.5)
+        music_state = "tunnel"
+        music_start_time = current_time - (music_pos * 1000)
+        
+    elif not freeze and music_state == "tunnel":
+        # Revenir à la version normale
+        current_time = pygame.time.get_ticks()
+        music_pos = (current_time - music_start_time) / 1000.0
+        
+        pygame.mixer.music.load("assets/sons/musique_fond.mp3")
+        pygame.mixer.music.play(-1, start=music_pos)
+        pygame.mixer.music.set_volume(0.1)
+        music_state = "normal"
+        music_start_time = current_time - (music_pos * 1000)
+
+def print_boom(boom, coord_boom):
+    if boom:
         screen.blit(img_boom, coord_boom)
+        pygame.mixer.Sound("assets/sons/boom.wav").play()
+
+# Réinitialise les variables du jeu
+def reset_game():
+    return {
+        'list_object': [],
+        'time_move': datetime.now(),
+        'time_pop': datetime.now(),
+        'time_freeze': None,
+        'freeze': False,
+        'stop': False,
+        'list_used': [],
+        'life': 3,
+        'boom': False,
+        'defeat': False,
+        'coord_boom': None
+    }
+
+def print_defaite():
+    nom_joueur = ""
+    saisie_terminee = False
+    
+    while not saisie_terminee:
+        screen.fill((0, 0, 0))
+        txt_defaite = font.render("Vous avez perdu !", True, (255, 0, 0))
+        screen.blit(txt_defaite, (350, 200))
+        screen.blit(font.render(f"Score final : {point}", True, (255, 255, 255)), (400, 280))
+        
+        # Afficher le texte de demande de nom
+        txt_prompt = font.render("Entrez votre nom :", True, (255, 255, 255))
+        screen.blit(txt_prompt, (380, 350))
+        
+        # Afficher le nom en cours de saisie avec un curseur
+        txt_nom = font.render(nom_joueur + "|", True, (255, 255, 0))
+        screen.blit(txt_nom, (540 - txt_nom.get_width() // 2, 400))
+        
+        # Instructions
+        txt_instruction = font.render("(Appuyez sur ENTREE pour valider)", True, (150, 150, 150))
+        screen.blit(txt_instruction, (280, 480))
+        
+        pygame.display.flip()
+        
+        # Gérer les événements
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "Joueur"
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    saisie_terminee = True
+                elif event.key == pygame.K_BACKSPACE:
+                    nom_joueur = nom_joueur[:-1]
+                elif event.unicode.isprintable() and len(nom_joueur) < 15:
+                    nom_joueur += event.unicode
+        
+        clock.tick(30)
+    
+    return nom_joueur if nom_joueur else "Joueur"
+
+running = True
 
 while running:
-    #clock.tick(60)
+    # Afficher le menu principal
     
-    screen.blit(background, (0, 0))
+    menu_result, difficulty = menu.menu(screen, "menu", "menu")
     
-    list_object, time_move = movement.move(list_object, time_move, freeze)
-    list_object, time_pop, list_used = movement.pop(list_object, time_pop, freeze, list_used)
-    print_boom(boom, coord_boom)
-
-    # Gestion des événements
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            current_time = time.time()
+    if menu_result:  # Si menu retourne True, on doit quitter
+        running = False
+        break
+    
+    # Initialiser / Réinitialiser le jeu
+    game_vars = reset_game()
+    point = 0
+    score_saved = False
+    game_running = True
+    difficulty_labels = ["Facile", "Moyen", "Difficile"]
+    if isinstance(difficulty, int):
+        difficulty = difficulty_labels[difficulty % len(difficulty_labels)]
+    
+    # Initialiser la musique pour cette partie
+    pygame.mixer.music.load("assets/sons/musique_fond.mp3")
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.1)
+    music_state = "normal"
+    music_start_time = pygame.time.get_ticks()
+    
+    # Boucle de jeu
+    while game_running and running:
+        clock.tick(60)
+        prev_freeze = game_vars['freeze']
+        
+        if not game_vars['stop']:
             
-            # Réinitialiser le combo si trop de temps s'est écoulé
-            if last_cut_time and (current_time - last_cut_time) > COMBO_WINDOW:
-                fruits_cuts = 0
+            screen.blit(background, (0, 0))
+            game_vars['list_object'], game_vars['time_move'] = movement.move(
+                game_vars['list_object'], game_vars['time_move'], game_vars['freeze']
+            )
+            game_vars['list_object'], game_vars['time_pop'], game_vars['list_used'] = movement.pop(
+                game_vars['list_object'], game_vars['time_pop'], game_vars['freeze'], game_vars['list_used'], difficulty
+            )
+            for i in range(game_vars['life']):
+                            screen.blit(hearts[i], (900 + i*60, 10))
+            score_text = font.render(f"Score: {point}", 1, (0, 0, 0))
+            score_rect = score_text.get_rect(center=(540, 30))
+            screen.blit(score_text, score_rect)
             
-            # Vérifier si la touche correspond à un objet
-            for i in range(len(list_object) - 1, -1, -1):
-                object = list_object[i]
-                if event.unicode.lower() == object.touche.lower():
-                    # Retirer la touche de list_used si elle y est
-                    if object.touche in list_used:
-                        list_used.remove(object.touche)
-                        fruits_cuts += 1
-                        last_cut_time = current_time
-                        list_object.pop(i)
+            # Gestion des événements
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    game_running = False
+                
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        # Dessiner l'état actuel du jeu avant d'ouvrir le menu pause
+                        screen.blit(background, (0, 0))
+                        for obj in game_vars['list_object']:
+                            screen.blit(obj.image, (obj.coord_x, obj.coord_y))
+                            screen.blit(
+                                font.render(obj.touche.upper(), 1, (0, 0, 0)),
+                                (obj.coord_x + 20, obj.coord_y - 30)
+                            )
+                        for i in range(game_vars['life']):
+                            screen.blit(hearts[i], (900 + i*60, 10))
                         
-                    if isinstance(object, Glaçon):
-                        freeze = True
-                        time_freeze = datetime.now()
-
-                    if isinstance(object, Bombe):
-                        boom = True
-                        coord_boom = (object.coord_x-(object.size/2 + 100/2), object.coord_y-(object.size/2 + 100/2))
-                    break
+                        # Appeler le menu pause
+                        pause_result, difficulty = menu.menu(screen, "pause", "jeu")
+                        if isinstance(difficulty, int):
+                            difficulty = difficulty_labels[difficulty % len(difficulty_labels)]
+                        if pause_result:  # Si True, quitter le programme
+                            running = False
+                            game_running = False
+                        # Si False, continuer le jeu
+                        continue
+                    
+                    current_time = time.time()
+                    if last_cut_time and (current_time - last_cut_time) > COMBO_WINDOW:
+                        fruits_cuts = 0
+                    
+                    # Vérifier si la touche correspond à un objet
+                    for i in range(len(game_vars['list_object']) - 1, -1, -1):
+                        object = game_vars['list_object'][i]
+                        if event.unicode.lower() == object.touche.lower():
+                            pygame.mixer.Sound("assets/sons/coupe.wav").play()
+                            # Retirer la touche de list_used
+                            if object.touche in game_vars['list_used']:
+                                game_vars['list_used'].remove(object.touche)
+                                fruits_cuts += 1
+                                last_cut_time = current_time
+                            game_vars['list_object'].pop(i)
+                            
+                            if isinstance(object, Glaçon):
+                                game_vars['freeze'] = True
+                                game_vars['time_freeze'] = datetime.now()
+                                pygame.mixer.Sound("assets/sons/glace.wav").play()
+                            
+                            if isinstance(object, Bombe):
+                                game_vars['boom'] = True
+                                game_vars['coord_boom'] = (
+                                    object.coord_x - (object.size/2 + 100/2),
+                                    object.coord_y - (object.size/2 + 100/2)
+                                )
+                            break
+                # Vérifier le combo après 500ms de pause ou 2+ fruits
+                    if fruits_cuts >= 2:
+                        point = sauvegarde.score(point, fruits_cuts) 
+                        fruits_cuts = 0
+                        last_cut_time = None
+                    else:
+                        point = sauvegarde.score(point, fruits_cuts)    
+           
+            # Supprimer les objets hors écran
+            for i in range(len(game_vars['list_object']) - 1, -1, -1):
+                object = game_vars['list_object'][i]
+                
+                if object.coord_y > 720:
+                    if isinstance(object, Fruit) and not isinstance(object, Bombe) and not isinstance(object, Glaçon):
+                        game_vars['life'] = logic.strike(object, game_vars['life'])
+                        pygame.mixer.Sound("assets/sons/hurt.mp3").play()
+                        print(game_vars['life'])
+                    # Retirer la touche de list_used quand l'objet sort
+                    if object.touche in game_vars['list_used']:
+                        game_vars['list_used'].remove(object.touche)
+                    game_vars['list_object'].pop(i)
+                else:
+                    screen.blit(object.image, (object.coord_x, object.coord_y))
+                    screen.blit(
+                        font.render(object.touche.upper(), 1, (0, 0, 0)),
+                        (object.coord_x + 20, object.coord_y - 30)
+                    )
             
-            # Vérifier le combo après 500ms de pause ou 2+ fruits
-            if fruits_cuts >= 2:
-                bonus = fruits_cuts * 50
-                point += sauvegarde.score(0, fruits_cuts) + bonus
-                print(f"Combo x{fruits_cuts}! +{sauvegarde.score(0, fruits_cuts) + bonus} points")
-                fruits_cuts = 0
-                last_cut_time = None      
+            game_vars['freeze'], game_vars['time_freeze'] = movement.freezer(
+                game_vars['freeze'], game_vars['time_freeze'], screen, background_freeze
+            )
+            
+            # Changer la musique si l'état freeze a changé
+            if prev_freeze != game_vars['freeze']:
+                switch_music(game_vars['freeze'])
+            
+            if logic.defaite(game_vars['life'], game_vars['boom']) and not score_saved:  # vérifie si la partie est perdue
+                print_boom(game_vars['boom'], game_vars['coord_boom'])
+                game_vars['life'] = 0
+                game_vars['stop'] = True
+                nom_joueur = print_defaite()
+                charger_score = sauvegarde.charger_scores()
+                sauvegarde.ajouter_score(nom_joueur,point, charger_score) 
+                score_saved = True
+                game_running = False  # Sortir de la boucle de jeu pour retourner au menu
+            
         
-    # Supprimer les objets hors écran et afficher
-    for i in range(len(list_object) - 1, -1, -1):
-        object = list_object[i]
-        
-        if object.coord_y > 750 and object is Fruit:
-            print(life)
-            # Retirer la touche de list_used quand l'objet sort
-            if object.touche in list_used:
-                list_used.remove(object.touche)
-            list_object.pop(i)
         else:
-            screen.blit(object.image, (object.coord_x, object.coord_y))
-            screen.blit(font.render(object.touche.upper(), 1, (0, 0, 0)), (object.coord_x + 20, object.coord_y - 30))
+            # Gérer les événements même quand le jeu est en pause
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    game_running = False
 
-    freeze, time_freeze = movement.freezer(freeze, time_freeze, screen, background_freeze)
-
-    if logic.defaite(life, boom) and not score_saved: #vérifie si la partie est perdue
-        life = 0
-        #pygame.quit() # à modifier par une fenêtre de défaite
-        charger_score=sauvegarde.charger_scores()
-        sauvegarde.ajouter_score("Joueur1",point,charger_score)
-        score_saved = True
-        running = False  # Arrête la boucle après avoir sauvegardé
-    pygame.display.flip()
+        #affichage pause et score
+        #txt_score=font.render(str(score(5,12)), True, (255,255,255)) #valeur de test dans score()
+        pygame.draw.rect(screen, (0,255,0), (10,10,50,50))
+        txt_pause=font.render("⏸", True, (255,255,255)) 
+        screen.blit(txt_pause,(25,15))
+        
+        pygame.display.flip()
 
 pygame.quit()
