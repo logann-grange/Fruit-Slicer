@@ -292,18 +292,17 @@ def game():
                                     object.coord_y - (object.size/2 + 100/2)
                                 )
                             break
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and mouse_press == False :
-                    if btn_pause.collidepoint(event.pos):
+                
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and btn_pause.collidepoint(event.pos):
                         pause_result, mode, difficulty, lang = menu.menu(screen, "pause", "jeu", difficulty, lang,  game_vars["list_object"])
                         if pause_result:  # Si True, quitter le programme
                             return True
-                    if mode == 1 :
-                        mouse_press = True
-                        time_slash = datetime.now()
-                        pause_result, mode, difficulty, lang = menu.menu(screen, "pause", "jeu", difficulty, lang,  game_vars["list_object"])
-                        if pause_result:  # Si True, quitter le programme
-                            return True
-                        # ajouter le btn pause
+                if mode == 1 : 
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 :
+                        if mouse_press == False :
+                            mouse_press = True
+                            time_slash = datetime.now()
+
                     if event.type == pygame.MOUSEBUTTONUP and event.button == 1 or datetime.now() >= time_slash + timedelta(seconds=0.8):
                         mouse_press = False
 
