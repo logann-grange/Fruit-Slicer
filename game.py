@@ -1,5 +1,6 @@
 import pygame
 import movement
+import translation
 import logic, menu, sauvegarde
 from datetime import datetime, timedelta
 import time
@@ -22,11 +23,14 @@ slash_effects = []
 mode = 0
 game_vars = {}
 difficulty = "Moyen"
+lang = 0
 
 background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'), (1080, 720))
 background_freeze = pygame.transform.scale(pygame.image.load('assets/images/fond_glace.png'), (1080, 720))
 img_boom = pygame.transform.scale(pygame.image.load("assets/images/boom.png"), (300, 300))
 background_freeze.set_alpha(60)
+img_btn_pause = pygame.transform.scale(pygame.image.load('assets/images/btn_pause.png'), (50, 50))
+btn_pause = pygame.Rect(10,10,50,50)
 
 heart1, heart2, heart3 = pygame.transform.scale(pygame.image.load('assets/images/heart.png'), (50, 50)), pygame.transform.scale(pygame.image.load('assets/images/heart.png'), (50, 50)), pygame.transform.scale(pygame.image.load('assets/images/heart.png'), (50, 50))
 hearts = [heart1, heart2, heart3]
@@ -40,9 +44,6 @@ pygame.mixer.music.load("assets/sons/music_menu.mp3")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.1)
 
-# pygame.mixer.music.load("assets/sons/musique_fond.mp3")
-# pygame.mixer.music.play(-1)
-# pygame.mixer.music.set_volume(0.1)
 
 def switch_music(freeze):
     global music_state, music_start_time
@@ -77,33 +78,40 @@ def print_defaite(point, list_object=None):
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.1)
 
-    background = pygame.Surface((570, 500), pygame.SRCALPHA)
-    background.fill((0, 0, 0, 128))
-    screen.blit(background, (275, 100))
+    str_fail = translation.translate("Vous avez perdu !", lang)
+    str_final_score = f"{translation.translate('Score final :', lang)} {point}"
+    str_enter_name = translation.translate("Entrez votre nom :", lang)
+    str_press_enter = translation.translate("(Appuyez sur ENTREE pour valider)", lang)
 
+    background_over = pygame.Surface((570, 500), pygame.SRCALPHA)
+    background_over.fill((0, 0, 0, 128))
                     
     while not saisie_terminee:
+        screen.blit(background, (0, 0))
+        screen.blit(background_over, (255, 110))
         #screen.blit(background, (0, 0))
         if list_object != None:
             for obj in list_object:
                 screen.blit(obj.image, (obj.coord_x, obj.coord_y))
                 screen.blit(font.render(obj.touche.upper(), 1, (0, 0, 0)), (obj.coord_x + 20, obj.coord_y - 30))
-        txt_defaite = font.render("Vous avez perdu !", True, (255, 0, 0))
-        screen.blit(txt_defaite, (350, 200))
-        screen.blit(font.render(f"Score final : {point}", True, (255, 255, 255)), (400, 280))
+        
+        txt_defaite = font.render(str_fail, True, (255, 0, 0))
+        screen.blit(txt_defaite, ((1080-font.size(str_fail)[0])/2,200))
+        screen.blit(font.render(str_final_score, True, (255, 255, 255)), ((1080-font.size(str_final_score)[0])/2,280))
+        
         
         # Afficher le texte de demande de nom
-        txt_prompt = font.render("Entrez votre nom :", True, (255, 255, 255))
-        screen.blit(txt_prompt, (380, 350))
+        txt_prompt = font.render(str_enter_name, True, (255, 255, 255))
+        screen.blit(txt_prompt, ((1080-font.size(str_enter_name)[0])/2,350))
         
         # Afficher le nom en cours de saisie avec un curseur
         txt_nom = font.render(nom_joueur + "|", True, (255, 255, 0))
         screen.blit(txt_nom, (540 - txt_nom.get_width() // 2, 400))
         
         # Instructions
-        txt_instruction = font.render("(Appuyez sur ENTREE pour valider)", True, (150, 150, 150))
-        screen.blit(txt_instruction, (280, 480))
-        
+        txt_instruction = font.render(str_press_enter, True, (150, 150, 150))
+        screen.blit(txt_instruction, ((1080-font.size(str_press_enter)[0])/2,480))
+
         pygame.display.flip()
         
         # Gérer les événements
@@ -124,9 +132,11 @@ def print_defaite(point, list_object=None):
 
 
 def print_boom(boom, coord_boom):
-    if boom:
+    time_boom = datetime.now()
+    pygame.mixer.Sound("assets/sons/boom.wav").play()
+    while boom and datetime.now() <= time_boom + timedelta(seconds=1) :
         screen.blit(img_boom, coord_boom)
-        pygame.mixer.Sound("assets/sons/boom.wav").play()
+        pygame.display.flip()
 
 
 # Réinitialise les variables du jeu
@@ -180,7 +190,7 @@ def draw_slashes(screen, mode):
 
 def game():
     # Initialiser / Réinitialiser le jeu
-    global mode, combo_count, game_vars, difficulty
+    global mode, combo_count, game_vars, difficulty, lang
     game_vars = reset_game()
     game_running = True
     mouse_press = False
@@ -249,7 +259,7 @@ def game():
                                 screen.blit(font.render(obj.touche.upper(), 1, (0, 0, 0)),(obj.coord_x + 20, obj.coord_y - 30))
                         pygame.display.flip()        
                         # Appeler le menu pause
-                        pause_result, mode, difficulty = menu.menu(screen, "pause", "jeu", difficulty, game_vars["list_object"])
+                        pause_result, mode, difficulty, lang = menu.menu(screen, "pause", "jeu", difficulty, lang,  game_vars["list_object"])
                         if pause_result:  # Si True, quitter le programme
                             return True
                         # Si False, continuer le jeu
@@ -282,11 +292,17 @@ def game():
                                     object.coord_y - (object.size/2 + 100/2)
                                 )
                             break
-
-                if mode == 1 :
-                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and mouse_press == False :
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and mouse_press == False :
+                    if btn_pause.collidepoint(event.pos):
+                        pause_result, mode, difficulty, lang = menu.menu(screen, "pause", "jeu", difficulty, lang,  game_vars["list_object"])
+                        if pause_result:  # Si True, quitter le programme
+                            return True
+                    if mode == 1 :
                         mouse_press = True
                         time_slash = datetime.now()
+                        pause_result, mode, difficulty, lang = menu.menu(screen, "pause", "jeu", difficulty, lang,  game_vars["list_object"])
+                        if pause_result:  # Si True, quitter le programme
+                            return True
                         # ajouter le btn pause
                     if event.type == pygame.MOUSEBUTTONUP and event.button == 1 or datetime.now() >= time_slash + timedelta(seconds=0.8):
                         mouse_press = False
@@ -361,6 +377,7 @@ def game():
                 print_boom(game_vars['boom'], game_vars['coord_boom'])
                 game_vars['life'] = 0
                 game_vars['stop'] = True
+                #time.sleep(1)
                 nom_joueur = print_defaite(game_vars['point'], list_object=game_vars['list_object'])
                 charger_score = sauvegarde.charger_scores()
                 sauvegarde.ajouter_score(nom_joueur,game_vars["point"], charger_score) 
@@ -372,7 +389,7 @@ def game():
                 pygame.mixer.music.play(-1)
                 pygame.mixer.music.set_volume(0.1)
             
-            print_boom(game_vars['boom'], game_vars['coord_boom'])
+            #print_boom(game_vars['boom'], game_vars['coord_boom'])
         
         else:
             # Gérer les événements même quand le jeu est en pause
@@ -380,11 +397,8 @@ def game():
                 if event.type == pygame.QUIT:
                     return True
 
-        #affichage pause
-        #txt_score=font.render(str(score(5,12)), True, (255,255,255)) #valeur de test dans score()
-        pygame.draw.rect(screen, (0,255,0), (10,10,50,50))
-        txt_pause=font.render("⏸", True, (255,255,255)) 
-        screen.blit(txt_pause,(25,15))
+        #affichage pause        
+        screen.blit(img_btn_pause, (10,10))
 
         draw_slashes(screen, mode)
         pygame.display.flip()
@@ -397,7 +411,7 @@ running = True
 
 while running:
     # Afficher le menu principal
-    menu_result, mode, difficulty = menu.menu(screen, "menu", "menu", difficulty)
+    menu_result, mode, difficulty, lang = menu.menu(screen, "menu", "menu", difficulty, lang)
     
     if menu_result:  # Si menu retourne True, on doit quitter
         running = False

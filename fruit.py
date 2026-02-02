@@ -9,11 +9,11 @@ class Fruit:
         self.size = 90
         self.image_origin = pygame.transform.scale(pygame.image.load(list_image[random.randint(0,len(list_image)-1)]), (self.size, self.size))
         self.image = self.image_origin
-        self.coord_x = random.randint(0, 1080-self.size) #à modifier selon la taille x de l'écran et du fruit en gardant un format (0, 1080-taille_fruit)
-        self.coord_y = 720 #à modifier par la taille y max de l'écran
-        self.speed_y = -50 #50
+        self.coord_x = random.randint(0, 1080-self.size)
+        self.coord_y = 720
+        self.speed_y = -50
         self.speed_x = random.uniform(-10, 10)
-        self.speed_change_y = random.uniform(1.5, 2.7) #1.5 2.7
+        self.speed_change_y = random.uniform(1.5, 2.7)
         self.angle = 0
         self.angle_direction = random.uniform(-3, 3)
         self.touche = list_touche[random.randint(0, len(list_touche)-1)]

@@ -1,15 +1,19 @@
-Français:French
-Anglais:English
-Jouer:Play
-Jeu:Game
-Options:Options
-Quitter:Quit
-Reprendre:Continue
-Menu Principal:Main Menu
-Langue:Language
-Niveau de difficulté:Difficulty level
-Facile:Easy
-Moyen:Normal
-Difficile:Difficult
-Clavier:Keyboard
-Souris:Mouse
+Français;French
+Anglais;English
+Jouer;Play
+Jeu;Game
+Options;Options
+Quitter;Quit
+Reprendre;Continue
+Menu Principal;Main Menu
+Langue;Language
+Niveau de difficulté;Difficulty level
+Facile;Easy
+Moyen;Normal
+Difficile;Difficult
+Clavier;Keyboard
+Souris;Mouse
+Vous avez perdu !;You loose !
+Score final :;Final score :
+Entrez votre nom :;Enter your name :
+(Appuyez sur ENTREE pour valider);(Press ENTER to valid)

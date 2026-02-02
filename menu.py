@@ -35,7 +35,7 @@ def print_scores_window(screen):
             y_pos += 40
             
 
-def menu(screen, etat, ancien_etat, difficulty, list_object=None, mode=0) :
+def menu(screen, etat, ancien_etat, difficulty, lang, list_object=None, mode=0) :
     global l
     MENU="menu"
     JEU=translation.translate("jeu", l)
@@ -68,10 +68,10 @@ def menu(screen, etat, ancien_etat, difficulty, list_object=None, mode=0) :
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True, mode, difficulty # Retourner True pour quitter le programme
+                return True, mode, difficulty, l # Retourner True pour quitter le programme
             if event.type == pygame.KEYDOWN:
                     if etat == PAUSE and event.key == pygame.K_ESCAPE:
-                        return False, mode, difficulty # retour en jeu
+                        return False, mode, difficulty, l # retour en jeu
             
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 # Gérer les clics selon l'état actuel du menu
@@ -80,12 +80,12 @@ def menu(screen, etat, ancien_etat, difficulty, list_object=None, mode=0) :
                 
                 if etat == MENU:
                     if btn_start.collidepoint(pos_click):
-                        return False, mode, difficulty  # Lancer le jeu
+                        return False, mode, difficulty, l  # Lancer le jeu
                     elif btn_option.collidepoint(pos_click):
                         ancien_etat = etat
                         etat = OPTION
                     elif btn_quit.collidepoint(pos_click):
-                        return True, mode, difficulty  # Quitter
+                        return True, mode, difficulty, l  # Quitter
                     elif btn_tab.collidepoint(pos_click):
                         ancien_etat = etat
                         etat = TABLEAU_SCORE
@@ -112,7 +112,7 @@ def menu(screen, etat, ancien_etat, difficulty, list_object=None, mode=0) :
                     screen.fill((0,0,0))
                     screen.blit(background, (0, 0))
                     if btn_reprendre.collidepoint(pos_click):
-                        return False, mode, difficulty  # Reprendre le jeu
+                        return False, mode, difficulty, l  # Reprendre le jeu
                     elif btn_options.collidepoint(pos_click):
                         ancien_etat = PAUSE
                         etat = OPTION
@@ -256,4 +256,4 @@ def menu(screen, etat, ancien_etat, difficulty, list_object=None, mode=0) :
         pygame.display.flip()
         clock.tick(60)
 
-    return False, mode, difficulty  # Retourner False pour continuer le jeu
+    return False, mode, difficulty, l  # Retourner False pour continuer le jeu
